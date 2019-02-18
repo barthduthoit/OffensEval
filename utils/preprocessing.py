@@ -16,9 +16,14 @@ stopwords_regex = r"\b({})\b".format('|'.join(map(re.escape, stopwords_all)))
 def clean(df):
     # Basic cleaning
     df["clean_tweets"] = df["tweet"].str.lower()
+    
+    # Removing urls (those of external datasets)
     df['clean_tweets'] = df["clean_tweets"].str.replace(r"(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})", "")
     df["clean_tweets"] = df["clean_tweets"].str.replace(stopwords_regex, "")
+    
+    # Removing usernames
     df["clean_tweets"] = df["clean_tweets"].str.replace(r"@(\w+)","")
+    
     df["clean_tweets"] = df["clean_tweets"].str.replace(r"[^a-zA-Z#]"," ")
     df["clean_tweets"] = df["clean_tweets"].str.replace(r"(\b\S{1,2}\b)", "")
     df["clean_tweets"] = df["clean_tweets"].str.replace("#","")
