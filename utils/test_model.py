@@ -68,11 +68,12 @@ def test_voting_model(models, X, y, vecs, n_splits=3, random_state=1):
     """
     kf = KFold(n_splits=n_splits, random_state=random_state, shuffle=True)
     f1 = 0
-    acc = 0   
+    acc = 0
+    n_classes = len(np.unique(y))
     for train_index, test_index in kf.split(X): 
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        y_pred_proba = np.zeros((y_test.shape[0], 2))
+        y_pred_proba = np.zeros((y_test.shape[0], n_classes))
         for model in models:
             if type(model)==keras.engine.sequential.Sequential:
                 y_pred_proba += single_fold_keras(model, X_train, X_test, y_train, y_test, vecs["keras"], proba=True)
