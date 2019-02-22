@@ -1,6 +1,8 @@
 from keras.callbacks import Callback
 import keras.backend as K
 import tensorflow as tf
+import numpy as np
+from sklearn.metrics import f1_score
 
 class Metrics(Callback):
     def on_train_begin(self, logs={}):
@@ -11,7 +13,7 @@ class Metrics(Callback):
         val_targ = np.argmax(self.validation_data[1], axis=1)
         _val_f1 = f1_score(val_targ, val_predict)
         self.val_f1s.append(_val_f1)
-        print(" — val_f1: {}".format(_val_f1))
+        print(" — val_macro_f1: {}".format(_val_f1), average="macro")
         
         
 def f1_loss(y_true, y_pred):    
