@@ -2,6 +2,7 @@ mkdir -p data/raw
 mkdir -p data/test/task_a
 mkdir data/test/task_b
 mkdir data/test/task_c
+mkdir submissions
 
 echo Downloading archives...
 wget -q --show-progress -cO - https://competitions.codalab.org/my/datasets/download/60e40c68-a85d-4320-bef1-d2fe26bb45ca > data/raw/start-kit.zip
