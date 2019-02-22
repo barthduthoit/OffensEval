@@ -24,3 +24,4 @@ mkdir data/additional/
 echo Downloading additional datasets
 wget -q --show-progress https://github.com/kmi-linguistics/trac-1/raw/master/english/agr_en_train.csv -P data/additional/
 wget -q --show-progress https://github.com/t-davidson/hate-speech-and-offensive-language/raw/master/data/labeled_data.csv -P data/additional
+wget -q --show-progress https://github.com/mammothb/symspellpy/raw/master/symspellpy/frequency_dictionary_en_82_765.txt -P data/

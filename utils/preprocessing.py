@@ -22,7 +22,7 @@ stemmer = PorterStemmer()
 max_edit_distance_dictionary = 2
 prefix_length = 7
 sym_spell = SymSpell(max_edit_distance_dictionary, prefix_length)
-dictionary_path = "frequency_dictionary_en_82_765.txt"
+dictionary_path = "data/frequency_dictionary_en_82_765.txt"
 term_index = 0  # column of the term in the dictionary text file
 count_index = 1  # column of the term frequency in the dictionary text file
 sym_spell.load_dictionary(dictionary_path, term_index, count_index)
