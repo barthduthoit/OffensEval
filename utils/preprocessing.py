@@ -7,7 +7,7 @@ from nltk.stem.porter import *
 from symspellpy.symspellpy import SymSpell, Verbosity
 import json
 
-with open('data/json/contractions.json') as f:
+with open('data/preprocessing/contractions.json') as f:
     contractions_dict = json.load(f)
 
 other_stopwords = ['also', 'another', 'came', 'come', 'could ', 'even', 'furthermore', 'get',
@@ -22,7 +22,7 @@ stemmer = PorterStemmer()
 max_edit_distance_dictionary = 2
 prefix_length = 7
 sym_spell = SymSpell(max_edit_distance_dictionary, prefix_length)
-dictionary_path = "data/frequency_dictionary_en_82_765.txt"
+dictionary_path = "data/preprocessing/frequency_dictionary_en_82_765.txt"
 term_index = 0  # column of the term in the dictionary text file
 count_index = 1  # column of the term frequency in the dictionary text file
 sym_spell.load_dictionary(dictionary_path, term_index, count_index)
