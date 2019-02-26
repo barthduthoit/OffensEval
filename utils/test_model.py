@@ -6,19 +6,35 @@ from utils.keras_utils import f1_loss
 from keras.utils import to_categorical
 from keras.preprocessing import sequence
 import numpy as np
+from scipy.sparse import hstack
 
 
 def single_fold_sklearn(model, X_train, X_test, y_train, y_test, vec, proba=False):
-    X_train = vec.fit_transform(X_train)
-    X_test = vec.transform(X_test)
-    clf = clone(model)
-    clf.fit(X_train, y_train)
-    if not proba:
-        return clf.predict(X_test)
+    if isinstance(vec, list):
+        train_vec = []
+        test_vec = []
+        for v in vec:
+            train_vec.append(v.fit_transform(X_train))
+            test_vec.append(v.transform(X_test))
+        X_train_vec = hstack(train_vec)
+        X_test_vec = hstack(test_vec)
+        clf = clone(model)
+        clf.fit(X_train_vec, y_train)
+        if not proba:
+            return clf.predict(X_test_vec)
+        else:
+            return clf.predict_proba(X_test_vec)
     else:
-        return clf.predict_proba(X_test)
+        X_train = vec.fit_transform(X_train)
+        X_test = vec.transform(X_test)
+        clf = clone(model)
+        clf.fit(X_train, y_train)
+        if not proba:
+            return clf.predict(X_test)
+        else:
+            return clf.predict_proba(X_test)
 
-def single_fold_keras(model, X_train, X_test, y_train, y_test, tokenizer, proba=False):
+def single_fold_keras(model, X_train, X_test, y_train, y_test, tokenizer, epochs=4, proba=False, verbose=True):
     y_train_cat, y_test_cat = to_categorical(y_train), to_categorical(y_test)
     tokenizer.fit_on_texts(X_train)
     list_tokenized_train = tokenizer.texts_to_sequences(X_train)
@@ -29,14 +45,14 @@ def single_fold_keras(model, X_train, X_test, y_train, y_test, tokenizer, proba=
     clf = keras.models.clone_model(model)
     clf.set_weights(model.get_weights())
     clf.compile(loss=f1_loss, optimizer='adam', metrics=['accuracy'])
-    clf.fit(X_tr, y_train_cat, epochs=4,  batch_size=64,  validation_data=(X_te, y_test_cat))
+    clf.fit(X_tr, y_train_cat, epochs=epochs,  batch_size=64,  validation_data=(X_te, y_test_cat), verbose=verbose)
     y_pred_proba = clf.predict(X_te)
     if not proba:
         return np.argmax(y_pred_proba, axis=1)
     else:
         return y_pred_proba
 
-def test_single_model(model, X, y, vec, n_splits=3, random_state=1):
+def test_single_model(model, X, y, vec, epochs=4, n_splits=3, random_state=1, verbose=True):
     """
     :param model: either a Keras Sequential model, or an Sklearn classifier:
     :param vec: either a Keras Tokenizer, or an Sklearn Vectorize:
@@ -50,7 +66,7 @@ def test_single_model(model, X, y, vec, n_splits=3, random_state=1):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         if type(model)==keras.engine.sequential.Sequential:
-            y_pred = single_fold_keras(model, X_train, X_test, y_train, y_test, vec)
+            y_pred = single_fold_keras(model, X_train, X_test, y_train, y_test, vec, epochs=epochs, verbose=verbose)
         elif 'sklearn' in str(type(model)):
             y_pred = single_fold_sklearn(model, X_train, X_test, y_train, y_test, vec)
         else:
